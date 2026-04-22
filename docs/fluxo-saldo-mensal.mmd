@@ -1,0 +1,24 @@
+flowchart LR
+  client[Cliente]
+
+  subgraph HTTP
+    ctrl["Controller (Express)\nGET /saldos?mes"]
+  end
+
+  subgraph Negócio
+    svc["Service\nSaldosService"]
+  end
+
+  subgraph Dados
+    repo["Repository\nOcorrenciasRepository"]
+    db[(PostgreSQL)]
+  end
+
+  client --> ctrl
+  ctrl --> svc
+  svc -->|agregar por competência e tipo| repo
+  repo --> db
+  db --> repo
+  repo --> svc
+  svc -->|saldo = entradas - saídas| ctrl
+  ctrl -->|200 mes, entradas, saidas, saldo| client

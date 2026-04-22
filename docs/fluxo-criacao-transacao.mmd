@@ -1,0 +1,32 @@
+flowchart LR
+  client[Cliente]
+
+  subgraph HTTP
+    ctrl["Controller (Express)\nPOST /transacoes"]
+  end
+
+  subgraph Negócio
+    svc["Service\nTransacoesService"]
+  end
+
+  subgraph Dados
+    repoT["Repository\nTransacoesRepository"]
+    repoO["Repository\nOcorrenciasRepository"]
+    db[(PostgreSQL)]
+  end
+
+  subgraph Externo
+    ai["AI Service\nCategoria"]
+  end
+
+  client --> ctrl
+  ctrl --> svc
+  svc -->|validar campos e modalidade| svc
+  svc -->|autocategorizar - query| ai
+  ai -->|sugestões ≥ threshold| svc
+  svc -->|criar transação| repoT
+  repoT --> db
+  svc -->|materializar ocorrências| repoO
+  repoO --> db
+  svc --> ctrl
+  ctrl -->|201 id, ocorrencias_criadas| client

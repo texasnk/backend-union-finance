@@ -1,0 +1,30 @@
+flowchart LR
+  client[Cliente]
+
+  subgraph HTTP
+    ctrl["Controller (Express)\nGET /saldos/insights?mes"]
+  end
+
+  subgraph Negócio
+    svc["Service\nInsightsService"]
+  end
+
+  subgraph Dados
+    repo["Repository\nOcorrenciasRepository"]
+    db[(PostgreSQL)]
+  end
+
+  subgraph Externo
+    ai["AI Service\nInsights"]
+  end
+
+  client --> ctrl
+  ctrl --> svc
+  svc -->|agregações por categoria e tipo| repo
+  repo --> db
+  db --> repo
+  repo --> svc
+  svc --> ai
+  ai -->|resumo_texto| svc
+  svc --> ctrl
+  ctrl -->|200 mes, resumo_texto, destaques, alertas| client
