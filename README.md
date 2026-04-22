@@ -14,9 +14,20 @@ API REST mínima para gestão financeira: registrar entradas e saídas e consult
 - npm (scripts/gestão de pacotes)
 - ts-node (execução TS em desenvolvimento)
 
+## Versão do Node
+- Recomendado: Node.js 22 LTS (22.x)
+- Alternativa compatível: Node.js 20 LTS
+- Ver/instalar via NVM:
+   ```bash
+   nvm ls-remote --lts | tail
+   nvm install --lts
+   nvm use --lts
+   node -v
+   ```
+
 ## Como Rodar Localmente
 1. Pré-requisitos
-   - Node.js e npm instalados
+   - Node.js 22 LTS (recomendado) e npm instalados
    - PostgreSQL em execução e um banco disponível
 2. Instalação
    ```bash
