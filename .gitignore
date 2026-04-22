@@ -1,0 +1,59 @@
+# Dependências
+node_modules/
+
+# Builds (TypeScript/Node)
+dist/
+build/
+out/
+
+# TypeScript
+*.tsbuildinfo
+
+# Testes (Jest/Nyc)
+coverage/
+.nyc_output/
+.jest/
+
+# Variáveis de ambiente
+.env
+.env.*
+!.env.example
+!.env*.example
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Cache e temporários
+.cache/
+.tmp/
+tmp/
+
+# Banco de dados (Postgres)
+pgdata/
+.pgdata/
+postgres-data/
+.psql_history
+*.dump
+*.sql.gz
+
+# IDEs/Editors (locais)
+.vscode/
+.idea/
+*.iml
+
+# Sistema Operacional
+.DS_Store
+Thumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+.Trash-*
+*.swp
+*.swo
+*~
+.nfs*
