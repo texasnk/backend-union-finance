@@ -35,9 +35,9 @@
   - [ ] P95 de latência adicional do POST /transacoes ≤ 200ms (ambiente local) com cache
 
 - RT-001 — Esquema e migrações de banco
-  - [ ] Tabelas `cartoes`, `transacoes`, `ocorrencias` criadas com PK/FK e constraints
-  - [ ] Índices: `ocorrencias(competencia, tipo)`, `ocorrencias(transacao_id)`, `transacoes(cartao_id)`
-  - [ ] Migrations aplicáveis em ambiente limpo sem erro
+  - [x] Tabelas `cartoes`, `transacoes`, `ocorrencias` criadas com PK/FK e constraints
+  - [x] Índices: `ocorrencias(competencia, tipo)`, `ocorrencias(transacao_id)`, `transacoes(cartao_id)`
+  - [x] Migrations aplicáveis em ambiente limpo sem erro
 
 - RT-002 — Precisão monetária e arredondamento
   - [ ] Operações em 2 casas decimais com arredondamento half-up
