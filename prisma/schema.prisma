@@ -1,0 +1,73 @@
+// Prisma schema for Union Finance API (MVP)
+// Database: PostgreSQL
+
+generator client {
+    provider = "prisma-client-js"
+}
+
+datasource db {
+    provider = "postgresql"
+}
+
+enum TransactionType {
+    income
+    expense
+}
+
+enum TransactionMode {
+    single
+    recurring_monthly
+    installment
+}
+
+model Card {
+    id          String   @id @default(cuid())
+    name        String   @db.VarChar(120)
+    closing_day Int      @db.SmallInt // 1–28 (validated at API/migration layer)
+    due_day     Int      @db.SmallInt // 1–28 (validated at API/migration layer)
+    created_at  DateTime @default(now()) @db.Timestamptz(6)
+
+    transactions Transaction[]
+}
+
+model Transaction {
+    id     String          @id @default(cuid())
+    name   String          @db.VarChar(120)
+    amount Decimal         @db.Decimal(14, 2)
+    type   TransactionType
+    mode   TransactionMode @default(single)
+
+    // Without card
+    reference_date DateTime? @db.Date
+
+    // With card
+    transaction_date DateTime? @db.Date
+    card_id          String?
+    card             Card?     @relation(fields: [card_id], references: [id])
+
+    category           String?  @db.VarChar(60)
+    note               String?  @db.VarChar(280)
+    total_installments Int?     @db.SmallInt
+    created_at         DateTime @default(now()) @db.Timestamptz(6)
+
+    occurrences Occurrence[]
+
+    @@index([card_id])
+}
+
+model Occurrence {
+    id             String      @id @default(cuid())
+    transaction_id String
+    transaction    Transaction @relation(fields: [transaction_id], references: [id], onDelete: Restrict)
+
+    type   TransactionType
+    amount Decimal         @db.Decimal(14, 2)
+    period String          @db.Char(7) // YYYY-MM
+
+    installment_number Int?     @db.SmallInt
+    total_installments Int?     @db.SmallInt
+    created_at         DateTime @default(now()) @db.Timestamptz(6)
+
+    @@index([period, type])
+    @@index([transaction_id])
+}
