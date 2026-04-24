@@ -213,3 +213,119 @@ Resposta:
 
 ---------
 
+
+FASE 3 - Prompt 5
+Tarefa: Implementar camada de services para regras de negócio.
+
+Contexto:
+- Projeto Node.js + TypeScript
+- Repositories já existem
+- Separar regra de negócio da camada HTTP/API
+- Sem dependências externas novas
+- Utilizar backlog.md e escopo-mvp.md
+
+Objetivo:
+Criar services para:
+- cálculo de saldo mensal
+- derivação de competência a partir da data de referência
+- sugestão de categoria usando componente de IA
+- geração de resumo financeiro assistido por IA
+
+Estrutura esperada:
+- src/services/
+- src/dtos/ quando necessário
+- src/errors/ ou helpers compartilhados se necessário
+
+Regras:
+- Services devem orquestrar repositories e regras de domínio
+- Controllers não devem conter regra de negócio
+- IA deve ser isolada por interface/adapter, sem acoplar provider específico
+- Não inventar campos fora do schema/backlog
+- Usar TypeScript tipado
+- Tratar erros de negócio e infraestrutura
+- Retornar código completo separado por caminho de arquivo
+
+Resposta:
+- Apenas código
+- Arquivos separados por caminho
+
+-------
+
+FASE 3 - Prompt 6
+Tarefa: Implementar services de IA com fallback local.
+
+Contexto:
+- Projeto Node.js + TypeScript
+- Deve rodar sem custo quando não houver OPENAI_API_KEY
+- Sem dependências externas novas, salvo se já existirem no projeto
+
+Objetivo:
+Criar services para:
+- sugestão de categorias
+- geração de insights/resumos financeiros
+
+Regras:
+- Se OPENAI_API_KEY não existir, usar heurística local
+- Se OPENAI_API_KEY existir, tentar chamada opcional à LLM
+- Toda chamada externa deve ter timeout
+- Em timeout, erro ou resposta inválida, usar fallback local
+- Nunca quebrar fluxo principal por falha da IA
+- Não expor chave em logs
+- Tipar entradas e saídas com DTOs/interfaces
+- Isolar provider LLM em adapter/interface
+- Manter regra fora da camada HTTP
+
+Resposta:
+- Código completo em src/services/ e arquivos auxiliares necessários
+- Separar por caminho de arquivo
+- Não incluir explicações longas
+
+-------
+
+FASE 3 - Prompt 7
+Tarefa: Criar controllers e rotas HTTP para a API.
+
+Contexto:
+- Projeto Node.js + TypeScript
+- Models, DTOs, repositories e services já existem
+- Camada de insights e sugestão de categoria já existe
+- Usar os services existentes; não duplicar regra de negócio
+
+Objetivo:
+Criar endpoints POST/GET para:
+- transações
+- cartões
+- saldo mensal
+- insights financeiros
+- sugestão de categoria
+
+Estrutura esperada:
+- src/controllers/
+- src/routes/
+- arquivos auxiliares apenas se necessários
+
+Regras:
+- Controllers devem apenas validar entrada básica, chamar services e montar resposta HTTP
+- Não colocar regra de negócio no controller
+- Usar DTOs existentes
+- Retornar status HTTP corretos:
+  - 201 para criação
+  - 200 para consultas
+  - 400 para entrada inválida
+  - 404 para recurso inexistente
+  - 500 para erro inesperado
+- Tratamento explícito de 404
+- Separar endpoints por domínio/pasta
+- Não inventar campos fora dos DTOs/models existentes
+- Não criar dependências externas novas
+
+Resposta:
+- Código completo
+- Separar por caminho de arquivo
+- Não incluir explicações fora do código
+
+
+----
+
+
+Foi necessário apenas correções nos schemas após implementar as controllers e pedi para deixa-los em arquivos separados
