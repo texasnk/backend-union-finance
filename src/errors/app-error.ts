@@ -23,3 +23,31 @@ export class RepositoryError extends AppError {
         this.name = 'RepositoryError'
     }
 }
+
+export class ValidationError extends AppError {
+    constructor(message: string, options?: AppErrorOptions) {
+        super('VALIDATION_ERROR', message, options)
+        this.name = 'ValidationError'
+    }
+}
+
+export class NotFoundError extends AppError {
+    constructor(message: string, options?: AppErrorOptions) {
+        super('NOT_FOUND', message, options)
+        this.name = 'NotFoundError'
+    }
+}
+
+export class BusinessRuleViolationError extends AppError {
+    constructor(message: string, options?: AppErrorOptions) {
+        super('BUSINESS_RULE_VIOLATION', message, options)
+        this.name = 'BusinessRuleViolationError'
+    }
+}
+
+export class InfrastructureError extends AppError {
+    constructor(message: string, options?: AppErrorOptions) {
+        super('INTERNAL_ERROR', message, options)
+        this.name = 'InfrastructureError'
+    }
+}
