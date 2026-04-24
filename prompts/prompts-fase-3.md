@@ -116,3 +116,100 @@ Critérios:
 - evitar commits gigantes ou genéricos
 - evitar mensagem vaga como "update files" ou "fix stuff"
 
+
+
+--------------------
+
+FASE 3 - Prompt 3
+
+Read README.md, BACKLOG.md, and ESCOPO-MVP.md from this repository and generate a single AGENTS.md file in English.
+
+Goal:
+Create an operational instruction file for coding agents working in this project.
+
+Rules:
+- Extract only implementation-relevant information.
+- Do not copy large sections verbatim.
+- Merge duplicated information.
+- If sources conflict, prefer the most specific operational rule.
+- Do not invent technologies, architecture, or business rules not explicitly present.
+- Omit uncertain information instead of guessing.
+
+Output requirements:
+- Return only AGENTS.md content.
+- Output must be in English.
+- Use short bullet points.
+- Use imperative language.
+- Keep it concise and practical.
+- Avoid explanations, commentary, or markdown outside the file.
+
+Focus sections only if supported by source files:
+- Project purpose
+- MVP scope
+- Tech stack
+- Architecture
+- Folder conventions
+- Domain rules
+- Validation rules
+- API guidelines
+- Database rules
+- Testing rules
+- Constraints
+- Anti-patterns
+- Agent execution rules
+
+Writing constraints:
+- Prefer short sentences.
+- Remove repetition.
+- Prioritize actionable instructions.
+- Maximum density, minimum prose.
+
+Important:
+Write AGENTS.md as a working contract for AI agents that will edit code in this repository.
+
+-------------------
+
+FASE 3 - Prompt 4
+
+Tarefa: Implementar persistência inicial para a primeira release.
+
+Contexto:
+- Projeto Node.js + TypeScript
+- Usar o schema atual do projeto
+- Usar requisitos definidos em docs/backlog.md
+- Sem dependências externas novas
+
+Objetivo:
+Criar camada de repositories para operações básicas de persistência de:
+- transações
+- cartões
+
+Escopo:
+- criação de registros
+- consulta por ID
+- listagem
+- consulta filtrada quando prevista no schema/backlog
+
+Estrutura esperada:
+- src/dtos/
+- src/repositories/
+- src/errors/ ou src/shared/errors/
+- arquivos auxiliares somente se necessários
+
+Regras:
+- TypeScript tipado
+- DTOs explícitos para input/output
+- Tratamento de erro padronizado
+- Não misturar regra de negócio complexa no repository
+- Repository deve focar em acesso a dados
+- Não criar dependências externas
+- Não inventar campos fora do schema
+- Se faltar informação no schema/backlog, sinalizar antes do código
+
+Resposta:
+- Fornecer o código completo
+- Separar por caminho de arquivo
+- Não incluir explicações longas
+
+---------
+
