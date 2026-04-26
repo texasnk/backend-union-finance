@@ -1,4 +1,4 @@
-FASE 2 - Prompt 1
+# FASE 2 - Prompt 1
 Tarefa: Gerar documento docs/escopo-mvp.md.
 
 Contexto:
@@ -47,7 +47,7 @@ Joguei o resultado no GPT para segunda validação e depois retornei no copilot 
 
 -----
 
-FASE 2 Prompt 2
+# FASE 2 Prompt 2
 Tarefa: Gerar docs/backlog.md.
 
 Contexto:
@@ -82,7 +82,7 @@ Na fase 2 após o prompt solicitei para a IA me trazer insights de aplicação d
 ----
 
 
-FASE 2 Prompt 3
+# FASE 2 Prompt 3
 Tarefa: Gerar diagrama Mermaid.
 
 Contexto:

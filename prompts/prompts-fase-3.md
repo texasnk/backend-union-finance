@@ -1,4 +1,4 @@
-FASE 3 - Prompt 1
+# FASE 3 - Prompt 1
 
 # Contexto: 
 
@@ -66,7 +66,7 @@ Solicitações feitas após o prompt:
 
 ----
 
-FASE 3 - Prompt 2
+# FASE 3 - Prompt 2
 
 Revise as alterações atuais do repositório e proponha uma estratégia de commits pequenos, claros e seguros.
 
@@ -120,7 +120,7 @@ Critérios:
 
 --------------------
 
-FASE 3 - Prompt 3
+# FASE 3 - Prompt 3
 
 Read README.md, BACKLOG.md, and ESCOPO-MVP.md from this repository and generate a single AGENTS.md file in English.
 
@@ -169,7 +169,7 @@ Write AGENTS.md as a working contract for AI agents that will edit code in this 
 
 -------------------
 
-FASE 3 - Prompt 4
+# FASE 3 - Prompt 4
 
 Tarefa: Implementar persistência inicial para a primeira release.
 
@@ -214,7 +214,7 @@ Resposta:
 ---------
 
 
-FASE 3 - Prompt 5
+# FASE 3 - Prompt 5
 Tarefa: Implementar camada de services para regras de negócio.
 
 Contexto:
@@ -251,7 +251,7 @@ Resposta:
 
 -------
 
-FASE 3 - Prompt 6
+# FASE 3 - Prompt 6
 Tarefa: Implementar services de IA com fallback local.
 
 Contexto:
@@ -282,7 +282,7 @@ Resposta:
 
 -------
 
-FASE 3 - Prompt 7
+# FASE 3 - Prompt 7
 Tarefa: Criar controllers e rotas HTTP para a API.
 
 Contexto:
