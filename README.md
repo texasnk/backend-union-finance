@@ -610,3 +610,7 @@ Divergências atuais:
 - adicionar especificação OpenAPI para contratos e erros
 - incluir observabilidade básica de request, erro e latência
 - evoluir o fallback de IA e o cache para cenários multi-instância
+
+## 16. Licença
+
+Este projeto está licenciado sob a MIT License. Consulte o arquivo [LICENSE](https://github.com/texasnk/backend-union-finance/blob/main/LICENSE) para o texto completo.
