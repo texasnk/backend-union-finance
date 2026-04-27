@@ -1,0 +1,65 @@
+flowchart TB
+  client[Cliente]
+
+  subgraph HTTP
+    ctrlBalance["Controller\nGET /saldos?mes"]
+    ctrlSuggest["Controller\nPOST /ai/sugerir-categoria"]
+    ctrlInsight["Controller\nGET /saldos/insights?mes"]
+    ctrlTransaction["Controller\nPOST /transacoes"]
+  end
+
+  subgraph Negocio["Camada de Services"]
+    balanceSvc["BalanceService"]
+    competenceSvc["CompetenceService"]
+    categorySvc["CategorySuggestionService"]
+    insightSvc["FinancialInsightService"]
+  end
+
+  subgraph Dados
+    occurrenceRepo["OccurrenceRepository"]
+    cardRepo["CardRepository"]
+    db[(PostgreSQL)]
+  end
+
+  subgraph AI["Adaptador de IA"]
+    aiProvider["FinancialAIProvider"]
+    aiStub["StubFinancialAIProvider"]
+    cache["MemoryCache"]
+  end
+
+  client --> ctrlBalance
+  ctrlBalance --> balanceSvc
+  balanceSvc -->|agrega entradas/saidas por competencia| occurrenceRepo
+  occurrenceRepo --> db
+  db --> occurrenceRepo
+  occurrenceRepo --> balanceSvc
+  balanceSvc -->|saldo = entradas - saidas| ctrlBalance
+
+  client --> ctrlTransaction
+  ctrlTransaction --> competenceSvc
+  competenceSvc -->|data_referencia -> YYYY-MM| ctrlTransaction
+  ctrlTransaction -->|com cartao consulta fechamento| cardRepo
+  cardRepo --> db
+  db --> cardRepo
+  ctrlTransaction --> competenceSvc
+  competenceSvc -->|data_transacao + dia_fechamento -> YYYY-MM| ctrlTransaction
+
+  client --> ctrlSuggest
+  ctrlSuggest --> categorySvc
+  categorySvc --> aiProvider
+  aiProvider --> aiStub
+  aiStub --> cache
+  aiStub --> categorySvc
+  categorySvc -->|sugestoes ordenadas por confidence| ctrlSuggest
+
+  client --> ctrlInsight
+  ctrlInsight --> insightSvc
+  insightSvc --> balanceSvc
+  insightSvc --> occurrenceRepo
+  occurrenceRepo --> db
+  db --> occurrenceRepo
+  insightSvc --> aiProvider
+  aiProvider --> aiStub
+  aiStub --> cache
+  aiStub --> insightSvc
+  insightSvc -->|resumo_texto, destaques, alertas| ctrlInsight

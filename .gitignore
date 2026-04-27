@@ -57,3 +57,6 @@ $RECYCLE.BIN/
 *.swo
 *~
 .nfs*
+
+# Codex
+.codex
