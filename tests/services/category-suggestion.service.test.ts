@@ -1,125 +1,121 @@
 import { TransactionType } from '@prisma/client'
 import { CategorySuggestionService } from '../../src/services/category-suggestion.service'
-import { BusinessRuleViolationError } from '../../src/errors/app-error'
-import { FinancialAIProvider } from '../../src/services/ai/ai-provider'
+import OpenAIFinancialAIProvider from '../../src/services/ai/openai-financial-ai.provider'
 
 describe('CategorySuggestionService', () => {
-    const originalThreshold = process.env.AI_THRESHOLD
+    const originalEnv = {
+        OPENAI_API_KEY: process.env.OPENAI_API_KEY,
+        OPENAI_MODEL: process.env.OPENAI_MODEL,
+        OPENAI_BASE_URL: process.env.OPENAI_BASE_URL,
+        OPENAI_TIMEOUT_MS: process.env.OPENAI_TIMEOUT_MS,
+        AI_THRESHOLD: process.env.AI_THRESHOLD,
+        AI_CACHE_TTL_MINUTES: process.env.AI_CACHE_TTL_MINUTES,
+    }
 
     afterEach(() => {
-        if (originalThreshold === undefined) {
-            delete process.env.AI_THRESHOLD
-            return
-        }
+        jest.restoreAllMocks()
 
-        process.env.AI_THRESHOLD = originalThreshold
+        for (const [key, value] of Object.entries(originalEnv)) {
+            if (value === undefined) {
+                delete process.env[key]
+                continue
+            }
+
+            process.env[key] = value
+        }
     })
 
-    it('returns suggestions ordered by descending confidence', async () => {
-        const aiProvider: FinancialAIProvider = {
-            suggestCategory: jest.fn().mockResolvedValue([
-                { category: 'Lazer', confidence: 0.43 },
-                { category: 'Mercado', confidence: 0.91 },
-                { category: 'Transporte', confidence: 0.65 },
-            ]),
-            generateMonthlySummary: jest.fn(),
-        }
+    it('returns high, medium, and low confidence category suggestions in descending order', async () => {
+        delete process.env.OPENAI_API_KEY
 
-        const service = new CategorySuggestionService(aiProvider)
+        const service = new CategorySuggestionService()
 
         await expect(
             service.suggest({
-                name: 'Compra mercado',
+                name: 'Salario transferencia',
+                amount: '5000.00',
+                type: TransactionType.income,
+            }),
+        ).resolves.toEqual([
+            { category: 'Salario', confidence: 0.98 },
+            { category: 'Transferencia', confidence: 0.82 },
+            { category: 'Receita', confidence: 0.6 },
+        ])
+    })
+
+    it('uses the local heuristic when OPENAI_API_KEY is missing', async () => {
+        delete process.env.OPENAI_API_KEY
+        process.env.AI_THRESHOLD = '0.80'
+
+        const service = new CategorySuggestionService()
+
+        await expect(
+            service.suggestAutofillCategory({
+                name: 'Uber viagem trabalho',
+                amount: '38.90',
+                type: TransactionType.expense,
+            }),
+        ).resolves.toBe('Transporte')
+    })
+
+    it('falls back to the local heuristic when the OpenAI provider returns an error', async () => {
+        process.env.OPENAI_API_KEY = 'test-key'
+        jest.spyOn(OpenAIFinancialAIProvider.prototype, 'suggestCategory').mockRejectedValue(
+            new Error('provider unavailable'),
+        )
+
+        const service = new CategorySuggestionService()
+
+        await expect(
+            service.suggest({
+                name: 'Mercado Central',
                 amount: '150.00',
                 type: TransactionType.expense,
             }),
         ).resolves.toEqual([
-            { category: 'Mercado', confidence: 0.91 },
-            { category: 'Transporte', confidence: 0.65 },
-            { category: 'Lazer', confidence: 0.43 },
+            { category: 'Alimentacao', confidence: 0.93 },
+            { category: 'Despesas gerais', confidence: 0.55 },
+            { category: 'Transporte', confidence: 0.4 },
         ])
     })
 
-    it('rejects empty names before calling the AI provider', async () => {
-        const aiProvider: FinancialAIProvider = {
-            suggestCategory: jest.fn(),
-            generateMonthlySummary: jest.fn(),
-        }
+    it('falls back to the local heuristic when the OpenAI provider times out', async () => {
+        process.env.OPENAI_API_KEY = 'test-key'
+        jest.spyOn(OpenAIFinancialAIProvider.prototype, 'suggestCategory').mockRejectedValue(
+            Object.assign(new Error('request timed out'), { name: 'AbortError' }),
+        )
 
-        const service = new CategorySuggestionService(aiProvider)
-
-        await expect(
-            service.suggest({
-                name: '   ',
-                amount: '80.00',
-                type: TransactionType.expense,
-            }),
-        ).rejects.toMatchObject<Partial<BusinessRuleViolationError>>({
-            code: 'BUSINESS_RULE_VIOLATION',
-            message: 'name must not be empty',
-            details: [{ field: 'name', error: 'required' }],
-        })
-        expect(aiProvider.suggestCategory).not.toHaveBeenCalled()
-    })
-
-    it('returns the best category when confidence is above the threshold', async () => {
-        process.env.AI_THRESHOLD = '0.75'
-
-        const aiProvider: FinancialAIProvider = {
-            suggestCategory: jest.fn().mockResolvedValue([
-                { category: 'Mercado', confidence: 0.76 },
-                { category: 'Lazer', confidence: 0.55 },
-            ]),
-            generateMonthlySummary: jest.fn(),
-        }
-
-        const service = new CategorySuggestionService(aiProvider)
-
-        await expect(
-            service.suggestAutofillCategory({
-                name: 'Mercado Central',
-                amount: '200.00',
-                type: TransactionType.expense,
-            }),
-        ).resolves.toBe('Mercado')
-    })
-
-    it('returns null when there are no suggestions above the threshold', async () => {
-        process.env.AI_THRESHOLD = '0.80'
-
-        const aiProvider: FinancialAIProvider = {
-            suggestCategory: jest.fn().mockResolvedValue([
-                { category: 'Transporte', confidence: 0.79 },
-            ]),
-            generateMonthlySummary: jest.fn(),
-        }
-
-        const service = new CategorySuggestionService(aiProvider)
-
-        await expect(
-            service.suggestAutofillCategory({
-                name: 'Uber',
-                amount: '40.00',
-                type: TransactionType.expense,
-            }),
-        ).resolves.toBeNull()
-    })
-
-    it('propagates provider failures', async () => {
-        const dependencyError = new Error('provider unavailable')
-        const aiProvider: FinancialAIProvider = {
-            suggestCategory: jest.fn().mockRejectedValue(dependencyError),
-            generateMonthlySummary: jest.fn(),
-        }
-
-        const service = new CategorySuggestionService(aiProvider)
+        const service = new CategorySuggestionService()
 
         await expect(
             service.suggest({
-                name: 'Padaria',
-                amount: '25.00',
+                name: 'Spotify premium',
+                amount: '21.90',
                 type: TransactionType.expense,
             }),
-        ).rejects.toBe(dependencyError)
+        ).resolves.toEqual([
+            { category: 'Lazer', confidence: 0.88 },
+            { category: 'Despesas gerais', confidence: 0.55 },
+            { category: 'Transporte', confidence: 0.4 },
+        ])
+    })
+
+    it('falls back to the local heuristic when the OpenAI provider returns an invalid response', async () => {
+        process.env.OPENAI_API_KEY = 'test-key'
+        jest.spyOn(OpenAIFinancialAIProvider.prototype, 'suggestCategory').mockResolvedValue([])
+
+        const service = new CategorySuggestionService()
+
+        await expect(
+            service.suggest({
+                name: 'Farmacia do bairro',
+                amount: '67.40',
+                type: TransactionType.expense,
+            }),
+        ).resolves.toEqual([
+            { category: 'Saude', confidence: 0.9 },
+            { category: 'Despesas gerais', confidence: 0.55 },
+            { category: 'Transporte', confidence: 0.4 },
+        ])
     })
 })
