@@ -2,6 +2,7 @@
   "name": "union-finance-api",
   "version": "0.1.0",
   "private": true,
+  "license": "MIT",
   "type": "commonjs",
   "main": "dist/server.js",
   "scripts": {
